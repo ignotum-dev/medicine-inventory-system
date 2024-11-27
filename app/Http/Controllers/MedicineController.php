@@ -2,25 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Medicine;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\MedicineResource;
+use App\Http\Resources\MedicineCollection;
+use App\Http\Requests\StoreMedicineRequest;
+use App\Http\Requests\UpdateMedicineRequest;
 
 class MedicineController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+        $this->authorizeResource(Medicine::class, 'medicine');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return new MedicineCollection(Medicine::paginate(5));
     }
 
     /**
@@ -28,7 +34,29 @@ class MedicineController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = app(StoreMedicineRequest::class)->validated();
+
+        DB::transaction(function () use ($validatedData) {
+            $category = Category::where('name', $validatedData['category_name'])->first();
+            $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
+            
+            Medicine::create([
+                'brand_name' => $validatedData['brand_name'],
+                'generic_name' => $validatedData['generic_name'],
+                'dosage' => $validatedData['dosage'],
+                'category_id' => $category->id,
+                'supplier_id' => $supplier->id,
+                'manufacturer' => $validatedData['manufacturer'],
+                'batch_number' => $validatedData['batch_number'],
+                'expiration_date' => $validatedData['expiration_date'],
+                'quantity' => $validatedData['quantity'],
+                'purchase_price' => $validatedData['purchase_price'],
+                'selling_price' => $validatedData['selling_price'],
+                'description' => $validatedData['description'],
+            ]);
+        });
+
+        return response()->json(['message' => 'Medicine added successfully!'], 200);
     }
 
     /**
@@ -36,15 +64,7 @@ class MedicineController extends Controller
      */
     public function show(Medicine $medicine)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Medicine $medicine)
-    {
-        //
+        return new MedicineResource($medicine);
     }
 
     /**
@@ -52,7 +72,31 @@ class MedicineController extends Controller
      */
     public function update(Request $request, Medicine $medicine)
     {
-        //
+        Medicine::findOrFail($medicine->id);
+
+        $validatedData = app(UpdateMedicineRequest::class)->validated();
+
+        DB::transaction(function () use ($validatedData, $medicine) {
+            $category = Category::where('name', $validatedData['category_name'])->first();
+            $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
+            
+            $medicine->update([
+                'brand_name' => $validatedData['brand_name'],
+                'generic_name' => $validatedData['generic_name'],
+                'dosage' => $validatedData['dosage'],
+                'category_id' => $category->id, 
+                'supplier_id' => $supplier->id, 
+                'manufacturer' => $validatedData['manufacturer'],
+                'batch_number' => $validatedData['batch_number'],
+                'expiration_date' => $validatedData['expiration_date'],
+                'quantity' => $validatedData['quantity'],
+                'purchase_price' => $validatedData['purchase_price'],
+                'selling_price' => $validatedData['selling_price'],
+                'description' => $validatedData['description'],
+            ]);
+        });
+
+        return response()->json(['message' => 'Medicine updated successfully!'], 200);
     }
 
     /**
@@ -60,6 +104,19 @@ class MedicineController extends Controller
      */
     public function destroy(Medicine $medicine)
     {
-        //
+        try {
+            $medicine->delete();
+
+            return response()->json([
+                'message' => 'Medicine deleted successfully',
+                'status' => 'success'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete the medicine',
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
