@@ -31,4 +31,8 @@ class Medicine extends Model
     public function supplier() {
         return $this->belongsTo(Supplier::class);
     }
+
+    public function purchases() {
+        return $this->hasMany(Purchase::class);
+    }
 }
