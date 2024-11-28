@@ -1,6 +1,3 @@
-To create a visually appealing version of your Markdown documentation with aesthetic designs, we can format it with various elements like headings, tables, and code blocks for better readability. Here’s an updated version with some aesthetic touches:
-
-```md
 # 🌿 Medicine Inventory System API - Laravel 10 🌿
 
 Welcome to the **Medicine Inventory System API** built with Laravel 10. This API includes authentication, authorization, and role-based access for managing medicines, categories, suppliers, and user data. It also logs purchases to update medicine stock and keeps track of the inventory.
@@ -181,10 +178,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 ```
-
-### Key Aesthetic Enhancements:
-1. **Emojis** have been added to headings and sections for a more visually engaging appearance.
-2. **Tables** are used for structured information like roles, permissions, and API endpoints.
-3. Code blocks and steps are clearly separated with markdown for easy readability.
-
-You can copy this content directly into your `.md` file for an enhanced aesthetic look!
