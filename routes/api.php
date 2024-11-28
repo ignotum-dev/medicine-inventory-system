@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\MedicineController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 
 /*
@@ -33,4 +34,9 @@ Route::prefix('/')->group(function () {
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('suppliers', SupplierController::class);
     Route::apiResource('medicines', MedicineController::class);
+});
+
+Route::prefix('/medicines')->group(function () {
+    Route::post('/purchase', [PurchaseController::class, 'purchase']);
+    Route::get('/', [MedicineController::class, 'search']);
 });
