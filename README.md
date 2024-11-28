@@ -29,8 +29,8 @@ Welcome to the **Medicine Inventory System API** built with Laravel 10. This API
 Start by cloning the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/medicine-inventory-api.git
-cd medicine-inventory-api
+git clone https://github.com/ignotum-dev/medicine-inventory-system
+cd medicine-inventory-system
 ```
 
 ### 2️⃣ Install Dependencies
@@ -116,33 +116,81 @@ This system supports **role-based access control (RBAC)** to manage permissions 
 
 ## 📡 API Endpoints
 
-### Authentication
-- **POST /api/login**: Login to get an API token.
-- **POST /api/register**: Register a new user (Admin only).
+## 🔧 System Routes
 
-### Medicines
-- **GET /api/medicines**: List all medicines.
-- **GET /api/medicines/{id}**: View a specific medicine.
-- **POST /api/medicines**: Add a new medicine (Admin, Encoder).
-- **PUT /api/medicines/{id}**: Update a medicine (Admin, Encoder, Pharmacist).
-- **DELETE /api/medicines/{id}**: Delete a medicine (Admin, Encoder).
+| Method        | URI                                         | Action                                                        | Controller                               |
+|---------------|---------------------------------------------|--------------------------------------------------------------|------------------------------------------|
+| **GET|HEAD**   | `/`                                         | Displays the home page or root response.                      | `\App\Http\Controllers\HomeController@index`  |
+| **POST**      | `/_ignition/execute-solution`              | Executes a solution for Laravel Ignition errors.              | `Spatie\LaravelIgnition\SolutionController@executeSolution` |
+| **GET|HEAD**  | `/_ignition/health-check`                  | Health check endpoint for Laravel Ignition.                   | `Spatie\LaravelIgnition\HealthCheckController@healthCheck` |
+| **POST**      | `/_ignition/update-config`                 | Updates the Laravel Ignition configuration.                   | `Spatie\LaravelIgnition\UpdateConfigController@updateConfig` |
 
-### Categories & Suppliers
-- **GET /api/categories**: List all categories (Admin, Encoder).
-- **POST /api/categories**: Create a new category (Admin, Encoder).
-- **PUT /api/categories/{id}**: Update a category (Admin, Encoder).
-- **DELETE /api/categories/{id}**: Delete a category (Admin, Encoder).
+---
 
-- **GET /api/suppliers**: List all suppliers (Admin, Encoder).
-- **POST /api/suppliers**: Create a new supplier (Admin, Encoder).
-- **PUT /api/suppliers/{id}**: Update a supplier (Admin, Encoder).
-- **DELETE /api/suppliers/{id}**: Delete a supplier (Admin, Encoder).
+## 🏷️ Categories Routes
 
-### Users
-- **GET /api/users**: List all users (Admin only).
-- **POST /api/users**: Create a new user (Admin only).
-- **PUT /api/users/{id}**: Update user data (Admin only).
-- **DELETE /api/users/{id}**: Delete a user (Admin only).
+| Method        | URI                                         | Action                                                        | Controller                               |
+|---------------|---------------------------------------------|--------------------------------------------------------------|------------------------------------------|
+| **GET|HEAD**  | `/api/categories`                          | Lists all categories.                                         | `CategoryController@index`               |
+| **POST**      | `/api/categories`                          | Creates a new category.                                       | `CategoryController@store`               |
+| **GET|HEAD**  | `/api/categories/{category}`               | Displays a specific category.                                 | `CategoryController@show`                |
+| **PUT|PATCH** | `/api/categories/{category}`               | Updates a specific category.                                  | `CategoryController@update`              |
+| **DELETE**    | `/api/categories/{category}`               | Deletes a specific category.                                  | `CategoryController@destroy`             |
+
+---
+
+## 💊 Medicines Routes
+
+| Method        | URI                                         | Action                                                        | Controller                               |
+|---------------|---------------------------------------------|--------------------------------------------------------------|------------------------------------------|
+| **GET|HEAD**  | `/api/medicines`                           | Search for medicines.                                         | `MedicineController@search`             |
+| **POST**      | `/api/medicines`                           | Adds a new medicine.                                          | `MedicineController@store`              |
+| **POST**      | `/api/medicines/purchase`                 | Records a purchase of medicine.                               | `PurchaseController@purchase`           |
+| **GET|HEAD**  | `/api/medicines/{medicine}`                | Shows details of a specific medicine.                          | `MedicineController@show`               |
+| **PUT|PATCH** | `/api/medicines/{medicine}`                | Updates a specific medicine.                                  | `MedicineController@update`             |
+| **DELETE**    | `/api/medicines/{medicine}`                | Deletes a specific medicine.                                  | `MedicineController@destroy`            |
+
+---
+
+## 🏢 Suppliers Routes
+
+| Method        | URI                                         | Action                                                        | Controller                               |
+|---------------|---------------------------------------------|--------------------------------------------------------------|------------------------------------------|
+| **GET|HEAD**  | `/api/suppliers`                           | Lists all suppliers.                                          | `SupplierController@index`              |
+| **POST**      | `/api/suppliers`                           | Adds a new supplier.                                          | `SupplierController@store`              |
+| **GET|HEAD**  | `/api/suppliers/{supplier}`                | Displays details of a specific supplier.                      | `SupplierController@show`               |
+| **PUT|PATCH** | `/api/suppliers/{supplier}`                | Updates a specific supplier.                                  | `SupplierController@update`             |
+| **DELETE**    | `/api/suppliers/{supplier}`                | Deletes a specific supplier.                                  | `SupplierController@destroy`            |
+
+---
+
+## 👤 Users Routes
+
+| Method        | URI                                         | Action                                                        | Controller                               |
+|---------------|---------------------------------------------|--------------------------------------------------------------|------------------------------------------|
+| **GET|HEAD**  | `/api/users`                               | Lists all users.                                              | `UserController@index`                  |
+| **POST**      | `/api/users`                               | Creates a new user.                                           | `UserController@store`                  |
+| **GET|HEAD**  | `/api/users/{user}`                        | Displays details of a specific user.                          | `UserController@show`                   |
+| **PUT|PATCH** | `/api/users/{user}`                        | Updates a specific user.                                      | `UserController@update`                 |
+| **DELETE**    | `/api/users/{user}`                        | Deletes a specific user.                                      | `UserController@destroy`                |
+
+---
+
+## 🔑 Authentication Routes
+
+| Method        | URI                                         | Action                                                        | Controller                               |
+|---------------|---------------------------------------------|--------------------------------------------------------------|------------------------------------------|
+| **POST**      | `/api/login`                               | Authenticates a user and provides an API token.               | `AuthController@login`                   |
+| **POST**      | `/api/logout`                              | Logs out the user and invalidates the token.                  | `AuthController@logout`                  |
+
+---
+
+## 🥧 CSRF Cookie Route
+
+| Method        | URI                                         | Action                                                        | Controller                               |
+|---------------|---------------------------------------------|--------------------------------------------------------------|------------------------------------------|
+| **GET|HEAD**  | `/sanctum/csrf-cookie`                     | Sets the CSRF cookie for session security.                    | `Laravel\Sanctum\CsrfCookieController@show` |
+
 
 ---
 
