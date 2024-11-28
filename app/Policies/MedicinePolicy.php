@@ -51,7 +51,7 @@ class MedicinePolicy
      */
     public function delete(User $auth_user, Medicine $medicine): bool
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder() || $auth_user->isPharmacist())
+        if ($auth_user->isAdmin() || $auth_user->isEncoder())
             return true;
         else
             return false;
