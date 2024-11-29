@@ -24,8 +24,13 @@ class MedicineController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Medicine $medicine)
     {
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($medicine)
+            ->log('index');
+
         return new MedicineCollection(Medicine::paginate(5));
     }
 
@@ -64,6 +69,12 @@ class MedicineController extends Controller
      */
     public function show(Medicine $medicine)
     {
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($medicine)
+            ->withProperties(new MedicineResource($medicine))
+            ->log('show');
+
         return new MedicineResource($medicine);
     }
 
@@ -122,6 +133,7 @@ class MedicineController extends Controller
 
     public function search(Request $request)
     {
+
         $per_page = $request->input('per_page', 10);
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');

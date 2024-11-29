@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,6 +10,8 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserCollection;
 use App\Http\Requests\StoreUserRequest;
+use Spatie\Activitylog\Models\Activity;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -23,8 +24,13 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(User $user)
     {
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->log('index');
+
         return new UserCollection(User::paginate(5));
     }
 
@@ -60,6 +66,12 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->withProperties(new UserResource($user))
+            ->log('show');
+
         return new UserResource($user);
     }
 

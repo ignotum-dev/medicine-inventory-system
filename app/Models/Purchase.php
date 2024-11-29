@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Purchase extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'medicine_id',
@@ -16,6 +18,14 @@ class Purchase extends Model
         'selling_price',
         'total_price',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        // ->logOnly(['name', 'text']);
+        ->logFillable()
+        ->logOnlyDirty();
+    }
 
     public function medicine() {
         return $this->belongsTo(Medicine::class);

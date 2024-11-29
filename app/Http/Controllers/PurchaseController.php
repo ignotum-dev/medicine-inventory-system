@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Medicine;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
 {
-    public function purchase(Request $request)
+    public function __construct()
     {
+        $this->middleware('auth:sanctum');
+    }
+
+    public function purchase(Request $request, Purchase $purchase)
+    {
+        $this->authorize('purchase', $purchase);
+
         // Validate the request
         $validated = $request->validate([
             'brand_name' => 'required|exists:medicines,brand_name',
@@ -36,17 +44,26 @@ class PurchaseController extends Controller
         // Calculate the total price
         $totalPrice = $medicine->selling_price * $validated['quantity'];
 
+        activity()->disableLogging();
         // Deduct the quantity
         $medicine->quantity -= $validated['quantity'];
         $medicine->save();
 
-        Purchase::create([
+        $medicineLog = Purchase::create([
             'medicine_id' => $medicine->id,
             'quantity' => $validated['quantity'],
             'stocks_left' => $medicine->quantity,
             'selling_price' =>$medicine->selling_price,
             'total_price' => $totalPrice
         ]);
+
+        // dd(auth()->user());
+        activity()->enableLogging()
+            ->causedBy(auth()->user())
+            ->performedOn($medicine)
+            // ->by($user)
+            ->withProperties($medicineLog)
+            ->log('purchased');
 
         // Return the computed total price
         return response()->json([

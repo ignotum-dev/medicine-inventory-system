@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Medicine extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'brand_name',
@@ -23,6 +25,14 @@ class Medicine extends Model
         'selling_price',
         'description',
     ];    
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        // ->logOnly(['name', 'text']);
+        ->logFillable()
+        ->logOnlyDirty();
+    }
 
     public function category() {
         return $this->belongsTo(Category::class);

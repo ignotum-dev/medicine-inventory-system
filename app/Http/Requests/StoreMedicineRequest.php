@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMedicineRequest extends FormRequest
@@ -31,6 +32,7 @@ class StoreMedicineRequest extends FormRequest
             'batch_number' => [
                 'required',
                 'regex:/^BN-\d{8}-\d{4}$/', // Regex for BN-YYYYMMDD-XXXX
+                Rule::unique('medicines')->ignore($this->medicine), // Ignore the current medicine being updated
             ],
             'expiration_date' => ['required', 'date', 'after:today'],
             'quantity' => ['required', 'integer', 'min:0'],
