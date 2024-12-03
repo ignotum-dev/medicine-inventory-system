@@ -38,5 +38,5 @@ Route::prefix('/')->group(function () {
 
 Route::prefix('/medicines')->group(function () {
     Route::post('/purchase', [PurchaseController::class, 'purchase']);
-    Route::get('/search', [MedicineController::class, 'search']);
+    Route::get('/', [MedicineController::class, 'search']);
 });
