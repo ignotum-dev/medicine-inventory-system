@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\Supplier;
+use App\Mail\LowStockAlert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\MedicineResource;
 use App\Http\Resources\MedicineCollection;
 use App\Http\Requests\StoreMedicineRequest;
@@ -86,6 +88,11 @@ class MedicineController extends Controller
         Medicine::findOrFail($medicine->id);
 
         $validatedData = app(UpdateMedicineRequest::class)->validated();
+
+        if ($validatedData['quantity'] < 10) {
+            // Send the email
+            Mail::to('geraldivan26@gmail.com')->send(new LowStockAlert($medicine));
+        }
 
         DB::transaction(function () use ($validatedData, $medicine) {
             $category = Category::where('name', $validatedData['category_name'])->first();
