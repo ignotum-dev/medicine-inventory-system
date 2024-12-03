@@ -1,0 +1,203 @@
+{
+	"info": {
+		"_postman_id": "e4dcece1-fdda-484c-b333-287a4bafc220",
+		"name": "Suppliers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38551911"
+	},
+	"item": [
+		{
+			"name": "Suppliers Index",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host api}}/suppliers",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"suppliers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Suppliers Show",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{host api}}/suppliers/5",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"suppliers",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Suppliers Store",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Bashirian-Fadels\",\r\n    \"contact_number\": \"+639993560599\",\r\n    \"address\": \"623645 Grayson Branch\\nRitchiemouth, PA 47829-2080\",\r\n    \"email\": \"gflores@spcf.edu.ph\" \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host api}}/suppliers",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"suppliers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Suppliers Update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Bashirian-Fadelsss\",\r\n    \"contact_number\": \"+639993560598\",\r\n    \"address\": \"623645 Grayson Branch\\nRitchiemouth, PA 47829-2080\",\r\n    \"email\": \"gflores@spcf.edu.ph\" \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host api}}/suppliers/51",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"suppliers",
+						"51"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Suppliers Destroy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host api}}/suppliers/51",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"suppliers",
+						"51"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,203 @@
+{
+	"info": {
+		"_postman_id": "3820c3d9-2f73-46a4-a4a7-3b8f42b25b13",
+		"name": "Users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38551911"
+	},
+	"item": [
+		{
+			"name": "Users Index",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host api}}/users",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users Show",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{host api}}/users/20",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"users",
+						"20"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users Store",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role\": \"viewer\",\r\n    \"first_name\": \"Gerald Ivan\",\r\n    \"middle_name\": null,\r\n    \"last_name\": \"Flores\",\r\n    \"email\": \"giflores@spcf.edu.ph\",\r\n    \"password\": \"password\",\r\n    \"password_confirmation\": \"password\",\r\n    \"date_of_birth\": \"2003-10-26\",\r\n    \"age\": 25,\r\n    \"sex\": \"Female\",\r\n    \"address\": \"2565 Glover Grove\\nJonathonmouth, DC 71797\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host api}}/users",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users Update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role\": \"viewer\",\r\n    \"first_name\": \"Gerald Ivanss\",\r\n    \"middle_name\": \"Pogis\",\r\n    \"last_name\": \"Flores\",\r\n    \"email\": \"gflores@spcf.edu.phs\",\r\n    \"date_of_birth\": \"2003-10-26\",\r\n    \"age\": 25,\r\n    \"sex\": \"Male\",\r\n    \"address\": \"2565 Glover Grove\\nJonathonmouth, DC 71797\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host api}}/users/21",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"users",
+						"21"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Users Destroy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host api}}/users/22",
+					"host": [
+						"{{host api}}"
+					],
+					"path": [
+						"users",
+						"22"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
