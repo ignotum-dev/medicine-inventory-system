@@ -219,10 +219,3 @@ Whenever a medicine is purchased, the `purchases` table records the transaction.
 The medicine inventory is automatically updated based on the purchase log.
 
 ---
-
-## 📝 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-```
