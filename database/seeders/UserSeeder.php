@@ -18,228 +18,74 @@ class UserSeeder extends Seeder
     {
         $dob = fake()->dateTimeBetween('-60 years', '-18 years');
         
-        $data = [
-            [
-                'role_id' => 1,
-                'first_name' => fake()->firstName,
-                'middle_name' => fake()->optional()->firstName,
-                'last_name' => fake()->lastName,
-                'email' => fake()->unique()->safeEmail(),
-                'email_verified_at' => now(),
-                'username' => 'admin',
-                'password' => '',
-                'dob' => $dob,
-                'age' => $this->calculateAge($dob),
-                'sex' => fake()->randomElement(['Male', 'Female']),
-                'address' => fake()->address,
-            ],
+        $adminUser = User::firstOrCreate([
+            'role_id' => 1,
+            'first_name' => fake()->firstName,
+            'middle_name' => fake()->lastName,
+            'last_name' => fake()->lastName,
+            'email' => fake()->unique()->safeEmail(),
+            'username' => 'admin',
+            'password' => '',
+            'dob' => $dob,
+            'age' => $this->calculateAge($dob),
+            'sex' => fake()->randomElement(['Male', 'Female']),
+            'address' => fake()->address,
+        ]);
+        $adminUser->assignRole('admin');
 
-            [
-                'role_id' => 2,
-                'first_name' => fake()->firstName,
-                'middle_name' => fake()->optional()->firstName,
-                'last_name' => fake()->lastName,
-                'email' => fake()->unique()->safeEmail(),
-                'email_verified_at' => now(),
-                'username' => 'encoder',
-                'password' => '',
-                'dob' => $dob,
-                'age' => $this->calculateAge($dob),
-                'sex' => fake()->randomElement(['Male', 'Female']),
-                'address' => fake()->address,
-            ],
+        $encoderUser = User::firstOrCreate([
+            'role_id' => 2,
+            'first_name' => fake()->firstName,
+            'last_name' => fake()->lastName,
+            'email' => fake()->unique()->safeEmail(),
+            'username' => 'encoder',
+            'password' => '',
+            'dob' => $dob,
+            'age' => $this->calculateAge($dob),
+            'sex' => fake()->randomElement(['Male', 'Female']),
+            'address' => fake()->address,
+        ]);
+        $encoderUser->assignRole('encoder');
 
-            [
-                'role_id' => 3,
-                'first_name' => fake()->firstName,
-                'middle_name' => fake()->optional()->firstName,
-                'last_name' => fake()->lastName,
-                'email' => fake()->unique()->safeEmail(),
-                'email_verified_at' => now(),
-                'username' => 'pharmacist',
-                'password' => '',
-                'dob' => $dob,
-                'age' => $this->calculateAge($dob),
-                'sex' => fake()->randomElement(['Male', 'Female']),
-                'address' => fake()->address,
-            ],
+        $pharmacistUser = User::firstOrCreate([
+            'role_id' => 3,
+            'first_name' => fake()->firstName,
+            'middle_name' => fake()->lastName,
+            'last_name' => fake()->lastName,
+            'email' => fake()->unique()->safeEmail(),
+            'username' => 'pharmacist',
+            'password' => '',
+            'dob' => $dob,
+            'age' => $this->calculateAge($dob),
+            'sex' => fake()->randomElement(['Male', 'Female']),
+            'address' => fake()->address,
+        ]);
+        $pharmacistUser->assignRole('pharmacist');
 
-            [
-                'role_id' => 4,
-                'first_name' => fake()->firstName,
-                'middle_name' => fake()->optional()->firstName,
-                'last_name' => fake()->lastName,
-                'email' => fake()->unique()->safeEmail(),
-                'email_verified_at' => now(),
-                'username' => 'viewer',
-                'password' => '',
-                'dob' => $dob,
-                'age' => $this->calculateAge($dob),
-                'sex' => fake()->randomElement(['Male', 'Female']),
-                'address' => fake()->address,
-            ],
+        $viewerUser = User::firstOrCreate([
+            'role_id' => 4,
+            'first_name' => fake()->firstName,
+            'middle_name' => fake()->lastName,
+            'last_name' => fake()->lastName,
+            'email' => fake()->unique()->safeEmail(),
+            'username' => 'viewer',
+            'password' => '',
+            'dob' => $dob,
+            'age' => $this->calculateAge($dob),
+            'sex' => fake()->randomElement(['Male', 'Female']),
+            'address' => fake()->address,
+        ]);
+        $viewerUser->assignRole('viewer');
 
-            // [
-            //     'role_id' => 4,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'viewer',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 3,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'pharmacist',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 2,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'encoder',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 2,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'encoder',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 4,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'viewer',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 3,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'pharmacist',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 4,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'viewer',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 3,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'pharmacist',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 3,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'pharmacist',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-
-            // [
-            //     'role_id' => 4,
-            //     'first_name' => fake()->firstName,
-            //     'middle_name' => fake()->optional()->firstName,
-            //     'last_name' => fake()->lastName,
-            //     'email' => fake()->unique()->safeEmail(),
-            //     'email_verified_at' => now(),
-            //     'username' => 'viewer',
-            //     'password' => '',
-            //     'dob' => $dob,
-            //     'age' => $this->calculateAge($dob),
-            //     'sex' => fake()->randomElement(['Male', 'Female']),
-            //     'address' => fake()->address,
-            // ],
-        ];
-
-        $data = array_map(function ($user) {
+        // Update passwords based on environment
+        $users = User::all();
+        $users->each(function($user) {
             if (app()->environment('production')) {
-                $user['password'] = bcrypt('P455w0rd');
+                $user->update(['password' => bcrypt('P455w0rd')]);
             } else {
-                $user['password'] = bcrypt($user['username']);
+                $user->update(['password' => bcrypt($user->username)]);
             }
-            return $user;
-        }, $data);
-
-        DB::table('users')->insert($data);
+        });
     }
 
     private function calculateAge($dob)

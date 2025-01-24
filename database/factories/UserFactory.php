@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use Carbon\Carbon;
-use App\Models\Role;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

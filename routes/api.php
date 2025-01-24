@@ -3,11 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,4 +41,18 @@ Route::prefix('/')->group(function () {
 Route::prefix('/medicines')->group(function () {
     Route::post('/purchase', [PurchaseController::class, 'purchase']);
     Route::get('/', [MedicineController::class, 'search']);
+});
+
+Route::group(['middleware' => ['role:admin|encoder|pharmacist|viewer']], function() {
+
+    Route::apiresource('permissions', PermissionController::class)->except('destroy');
+    Route::get('permissions/{permissionId}/delete', [PermissionController::class, 'destroy']);
+
+    Route::apiresource('roles', RoleController::class);
+    // Route::delete('roles/{roleId}/delete', [RoleController::class, 'destroy']);
+    Route::get('roles/{roleId}/give-permissions', [RoleController::class, 'addPermissionToRole']);
+    Route::put('roles/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
+
+    Route::apiresource('users', UserController::class)->except('destroy');
+    Route::get('users/{userId}/delete', [UserController::class, 'destroy']);
 });
