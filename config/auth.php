@@ -14,7 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        // 'guard' => 'web',
+        'guard' => 'sanctum',
         'passwords' => 'users',
     ],
 
@@ -39,6 +40,16 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+
+        'sanctum' => [
+            'driver'   => 'sanctum',
+            'provider' => 'users',  // <==  null for laravel-permission get the relations
         ],
     ],
 
