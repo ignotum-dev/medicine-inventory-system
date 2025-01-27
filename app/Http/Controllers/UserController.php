@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserCollection;
 use App\Http\Requests\StoreUserRequest;
@@ -30,7 +31,7 @@ class UserController extends Controller
             ->causedBy(auth()->user())
             ->performedOn($user)
             ->log('index');
-
+   
         return new UserCollection(User::paginate(5));
     }
 
@@ -49,6 +50,7 @@ class UserController extends Controller
                 'first_name' => $validatedData['first_name'],
                 'middle_name' => $validatedData['middle_name'],
                 'last_name' => $validatedData['last_name'],
+                'username' => $validatedData['username'],
                 'email' => $validatedData['email'],
                 'password' => Hash::make($validatedData['password']),
                 'dob' => $validatedData['date_of_birth'],
@@ -108,7 +110,7 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-    {
+    {   
         try {
             $user->delete();
 
