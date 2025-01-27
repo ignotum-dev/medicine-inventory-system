@@ -1,7 +1,6 @@
 <?php
 
 return [
-<<<<<<< HEAD
     'default_guard_name' => 'sanctum', // Set the default guard name here.
     // 'guard_name' => 'web',
 
@@ -10,16 +9,6 @@ return [
     ],
 
     'models' => [
-=======
-    'default_guard_name' => 'api', // Set the default guard name here.
-    // 'guard_name' => 'web',
-
-    'models' => [
-
-        // 'default_guard_name' => 'web', // Set the default guard name here.
-        // 'guard_name' => 'web',
-
->>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
         /*
          * When using the "HasPermissions" trait from this package, we need to know which
          * Eloquent model should be used to retrieve your permissions. Of course, it
