@@ -58,3 +58,17 @@ Route::middleware(['auth'])->group(function () {
     // User routes
     Route::apiResource('users', UserController::class);
 });
+
+Route::group(['middleware' => ['role:admin|encoder|pharmacist|viewer']], function() {
+
+    Route::apiresource('permissions', PermissionController::class)->except('destroy');
+    Route::get('permissions/{permissionId}/delete', [PermissionController::class, 'destroy']);
+
+    Route::apiresource('roles', RoleController::class);
+    // Route::delete('roles/{roleId}/delete', [RoleController::class, 'destroy']);
+    Route::get('roles/{roleId}/give-permissions', [RoleController::class, 'addPermissionToRole']);
+    Route::put('roles/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
+
+    Route::apiresource('users', UserController::class)->except('destroy');
+    Route::get('users/{userId}/delete', [UserController::class, 'destroy']);
+});

@@ -49,6 +49,10 @@ class RolesAndPermissionSeeder extends Seeder
             'create medicine', 'view medicine', 'update medicine', 'delete medicine',
             'create category', 'view category', 'update category', 'delete category',
             'create supplier', 'view supplier', 'update supplier', 'delete supplier',
+<<<<<<< HEAD
+=======
+            'purchase medicine'
+>>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
         ]);
 
         $pharmacistRole->givePermissionTo([

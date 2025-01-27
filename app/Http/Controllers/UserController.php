@@ -20,18 +20,25 @@ class UserController extends Controller
     {
         $this->middleware('auth:sanctum');
         $this->authorizeResource(User::class, 'user');
+        $this->middleware('permission:view user', ['only' => ['index']]);
+        $this->middleware('permission:create user', ['only' => ['store']]);
+        $this->middleware('permission:update user', ['only' => ['update']]);
+        $this->middleware('permission:delete user', ['only' => ['destroy']]);
     }
 
     /**
      * Display a listing of the resource.
      */
     public function index(User $user)
-    {
+    {   
         activity()
             ->causedBy(auth()->user())
             ->performedOn($user)
             ->log('index');
+<<<<<<< HEAD
    
+=======
+>>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
         return new UserCollection(User::paginate(5));
     }
 

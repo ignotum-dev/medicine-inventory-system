@@ -16,6 +16,10 @@ class SupplierController extends Controller
     {
         $this->middleware('auth:sanctum');
         $this->authorizeResource(Supplier::class, 'supplier');
+        $this->middleware('permission:view supplier', ['only' => ['index']]);
+        $this->middleware('permission:create supplier', ['only' => ['store']]);
+        $this->middleware('permission:update supplier', ['only' => ['update']]);
+        $this->middleware('permission:delete supplier', ['only' => ['destroy']]);
     }
 
     /**

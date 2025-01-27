@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+<<<<<<< HEAD
 use App\Policies\RolePolicy;
 use Spatie\Permission\Models\Role;
+=======
+// use App\Policies\RolePolicy;
+>>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
