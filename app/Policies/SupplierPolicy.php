@@ -11,62 +11,57 @@ class SupplierPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $auth_user): bool
+    public function viewAny(User $user)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('view supplier') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to view suppliers.');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $auth_user, Supplier $supplier)
+    public function view(User $user, Supplier $supplier)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('view supplier') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to view a supplier.');
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $auth_user): bool
+    public function create(User $user)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('create supplier') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to create a supplier.');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $auth_user, Supplier $supplier)
+    public function update(User $user, Supplier $supplier)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('update supplier') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to update a supplier.');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $auth_user, Supplier $supplier): bool
+    public function delete(User $user, Supplier $supplier)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('delete supplier') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to delete a supplier.');
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Supplier $supplier): bool
+    public function restore(User $user, Supplier $supplier)
     {
         //
     }
@@ -74,7 +69,7 @@ class SupplierPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Supplier $supplier): bool
+    public function forceDelete(User $user, Supplier $supplier)
     {
         //
     }

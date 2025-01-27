@@ -10,10 +10,9 @@ class PurchasePolicy
 {
     public function purchase(User $user, Purchase $purchase)
     {
-        if ($user->isAdmin() || $user->isPharmacist())
-            return true;
-        else 
-            return false;
+        return $user->can('purchase medicine') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to purchase medicines.');
     }
 
     /**

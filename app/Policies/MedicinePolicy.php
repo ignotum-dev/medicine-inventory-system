@@ -11,56 +11,57 @@ class MedicinePolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(User $user)
     {
-        return true;
+        return $user->can('view medicine') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to view medicines.');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Medicine $medicine): bool
+    public function view(User $user, Medicine $medicine)
     {
-        return true;
+        return $user->can('view medicine') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to view a medicine.');
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $auth_user): bool
+    public function create(User $user)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('create medicine') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to create a medicine.');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $auth_user, Medicine $medicine): bool
+    public function update(User $user, Medicine $medicine)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder() || $auth_user->isPharmacist())
-            return true;
-        else
-            return false;
+        return $user->can('update medicine') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to udpate a medicine.');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $auth_user, Medicine $medicine): bool
+    public function delete(User $user, Medicine $medicine)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('delete medicine') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to delete a medicine.');
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Medicine $medicine): bool
+    public function restore(User $user, Medicine $medicine)
     {
         //
     }
@@ -68,7 +69,7 @@ class MedicinePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Medicine $medicine): bool
+    public function forceDelete(User $user, Medicine $medicine)
     {
         //
     }

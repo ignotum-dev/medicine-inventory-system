@@ -11,62 +11,57 @@ class CategoryPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $auth_user)
+    public function viewAny(User $user)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('view category') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to view categories.');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $auth_user, Category $category)
+    public function view(User $user, Category $category)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('view category') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to view a category.');
     }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $auth_user): bool
+    public function create(User $user)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('create category') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to create a category.');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $auth_user, Category $category): bool
+    public function update(User $user, Category $category)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('update category') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to update a category.');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $auth_user, Category $category): bool
+    public function delete(User $user, Category $category)
     {
-        if ($auth_user->isAdmin() || $auth_user->isEncoder())
-            return true;
-        else
-            return false;
+        return $user->can('delete category') 
+            ? Response::allow() 
+            : Response::deny('You do not have permission to delete a category.');
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Category $category): bool
+    public function restore(User $user, Category $category)
     {
         //
     }
@@ -74,7 +69,7 @@ class CategoryPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Category $category): bool
+    public function forceDelete(User $user, Category $category)
     {
         //
     }
