@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
-<<<<<<< HEAD
 use Spatie\Permission\Models\Role;
-=======
->>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
 use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
@@ -18,13 +14,6 @@ class RoleController extends Controller
     {
         $this->middleware('auth:sanctum');
         $this->authorizeResource(Role::class, 'role');
-<<<<<<< HEAD
-=======
-        $this->middleware('permission:view role', ['only' => ['index']]);
-        $this->middleware('permission:create role', ['only' => ['store','addPermissionToRole','givePermissionToRole']]);
-        $this->middleware('permission:update role', ['only' => ['update']]);
-        $this->middleware('permission:delete role', ['only' => ['destroy']]);
->>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
     }
 
     public function index()
@@ -62,11 +51,7 @@ class RoleController extends Controller
     }
 
     public function destroy(Role $role)
-<<<<<<< HEAD
     {   
-=======
-    {
->>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
         try {
             $role->delete();
 
@@ -83,7 +68,6 @@ class RoleController extends Controller
         }
     }
 
-<<<<<<< HEAD
     public function addPermissionsToRole(Request $request, Role $role)
     {
         $this->authorize('addPermissionsToRole', $role);
@@ -118,34 +102,4 @@ class RoleController extends Controller
             'permissions' => $permissions->pluck('name') // Return only the permission names
         ]);
     }
-=======
-    public function addPermissionToRole($roleId)
-    {
-        $role = Role::findOrFail($roleId);
-        $permissions = Permission::all();
-        $rolePermissions = DB::table('role_has_permissions')
-            ->where('role_id', $role->id)
-            ->pluck('permission_id')
-            ->toArray();
-
-        return response()->json([
-            'role' => $role,
-            'permissions' => $permissions,
-            'rolePermissions' => $rolePermissions,
-        ], 200);
-    }
-
-    public function givePermissionToRole(Request $request, $roleId)
-    {
-        $request->validate([
-            'permission' => 'required|array',
-        ]);
-
-        $role = Role::findOrFail($roleId);
-        $role->syncPermissions($request->permission);
-
-        return response()->json(['message' => 'Permissions added to role'], 200);
-    }
-
->>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
 }

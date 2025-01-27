@@ -35,10 +35,7 @@ class UserController extends Controller
             ->causedBy(auth()->user())
             ->performedOn($user)
             ->log('index');
-<<<<<<< HEAD
    
-=======
->>>>>>> 8f82500482b1c3d9edd0639f68b19ff560969967
         return new UserCollection(User::paginate(5));
     }
 
