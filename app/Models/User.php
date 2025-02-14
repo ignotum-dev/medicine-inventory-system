@@ -4,14 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Searchable\Searchable;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Searchable\SearchResult;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Searchable
 {
     use HasApiTokens, HasFactory, Notifiable, LogsActivity, HasRoles;
 
@@ -44,6 +46,15 @@ class User extends Authenticatable
         ->logFillable()
         ->logOnlyDirty()
         ->logExcept(['password']);
+    }
+
+    public function getSearchResult(): SearchResult
+    {
+        return new SearchResult(
+            $this,
+            $this->first_name, // Name of the result
+            null // For APIs, you may not need a URL
+        );
     }
 
     /**

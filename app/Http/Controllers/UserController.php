@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Searchable\Search;
+use App\Traits\SearchableTrait;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Spatie\QueryBuilder\QueryBuilder;
 use App\Http\Resources\UserCollection;
 use App\Http\Requests\StoreUserRequest;
 use Spatie\Activitylog\Models\Activity;
@@ -16,6 +19,8 @@ use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
+    use SearchableTrait;
+    
     public function __construct()
     {
         $this->middleware('auth:sanctum');
@@ -26,18 +31,39 @@ class UserController extends Controller
         $this->middleware('permission:delete user', ['only' => ['destroy']]);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(User $user)
-    {   
+    public function index(Request $request)
+    {
         activity()
             ->causedBy(auth()->user())
-            ->performedOn($user)
             ->log('index');
-   
-        return new UserCollection(User::paginate(5));
+
+        $searchQuery = $request->input('search');  // Get the search query from the request
+
+        if ($searchQuery) {
+            $results = $this->performSearch(User::class, ['first_name', 'middle_name', 'last_name', 'email', 'username'], $searchQuery);
+            
+            return response()->json([
+                'query' => $searchQuery,
+                'results' => $results,
+                'count' => $results->count(),
+            ]);
+        }
+
+        // Apply Spatie QueryBuilder for filtering and pagination if no search query is provided
+        $users = QueryBuilder::for(User::class)
+            ->allowedFilters([
+                'first_name', 
+                'middle_name',
+                'last_name',
+                'email',
+                'username',
+                'dob',
+            ])
+            ->paginate(5);
+
+        return new UserCollection($users);
     }
+    
 
     /**
      * Store a newly created resource in storage.
