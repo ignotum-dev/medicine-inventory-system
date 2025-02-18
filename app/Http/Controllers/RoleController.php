@@ -24,15 +24,16 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|unique:roles,name',
+        $name = $request->validate([
+            'role' => 'string|max:30|unique:roles,name'
         ]);
 
         $role = Role::create([
-            'name' => $validated['name'],
+            'name' => $name,
+            'guard_name' => 'web',
         ]);
 
-        return response()->json(['message' => 'Role created successfully', 'role' => $role], 201);
+        return $role;
     }
 
     public function update(Request $request, Role $role)
@@ -56,12 +57,12 @@ class RoleController extends Controller
             $role->delete();
 
             return response()->json([
-                'message' => 'Supplier removed successfully',
+                'message' => 'Role removed successfully',
                 'status' => 'success'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to remove the supplier',
+                'message' => 'Failed to remove the role',
                 'status' => 'error',
                 'error' => $e->getMessage()
             ], 500);
