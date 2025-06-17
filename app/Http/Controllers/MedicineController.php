@@ -46,7 +46,7 @@ class MedicineController extends Controller
         DB::transaction(function () use ($validatedData) {
             $category = Category::where('name', $validatedData['category_name'])->first();
             $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
-            
+
             Medicine::create([
                 'brand_name' => $validatedData['brand_name'],
                 'generic_name' => $validatedData['generic_name'],
@@ -97,13 +97,13 @@ class MedicineController extends Controller
         DB::transaction(function () use ($validatedData, $medicine) {
             $category = Category::where('name', $validatedData['category_name'])->first();
             $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
-            
+
             $medicine->update([
                 'brand_name' => $validatedData['brand_name'],
                 'generic_name' => $validatedData['generic_name'],
                 'dosage' => $validatedData['dosage'],
-                'category_id' => $category->id, 
-                'supplier_id' => $supplier->id, 
+                'category_id' => $category->id,
+                'supplier_id' => $supplier->id,
                 'manufacturer' => $validatedData['manufacturer'],
                 'batch_number' => $validatedData['batch_number'],
                 'expiration_date' => $validatedData['expiration_date'],
@@ -211,6 +211,31 @@ class MedicineController extends Controller
                 'total_page' => $medicinesResult->lastPage(),
             ],
         ]);
-}
-    
+    }
+
+    public function uploadImage(Request $request, Medicine $medicine)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = $medicine->brand_name . '_' . $medicine->generic_name . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/medicine_images', $imageName);
+
+            $imageUrl = asset('storage/medicine_images/' . $imageName);
+
+            Medicine::where('id', $medicine->id)->update(['image' => $imageUrl]);
+
+            return response()->json([
+                'message' => 'Image uploaded successfully!',
+                'image_url' => $imageUrl,
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'No image uploaded.',
+        ], 400);
+    }
 }
