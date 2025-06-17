@@ -26,6 +26,11 @@ class Medicine extends Model
         'description',
     ];    
 
+    protected $casts = [
+        'purchase_price' => 'float',
+        'selling_price' => 'float',
+    ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
