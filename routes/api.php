@@ -40,6 +40,7 @@ Route::prefix('/')->group(function () {
 
 Route::prefix('/medicines')->group(function () {
     Route::post('/purchase', [PurchaseController::class, 'purchase']);
+    Route::post('/{medicine}/upload-image', [MedicineController::class, 'uploadImage']);
     Route::get('/', [MedicineController::class, 'search']);
 })->middleware('auth');
 
