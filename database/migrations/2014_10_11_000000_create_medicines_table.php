@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('brand_name');
             $table->string('generic_name');
+            $table->string('image')->nullable();
             $table->string('dosage');
             
             $table->foreignIdFor(Category::class)
