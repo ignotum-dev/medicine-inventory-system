@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -28,9 +29,7 @@ class MedicineFactory extends Factory
         // $batchNumber = 'BN-' . $date . '-' . str_pad($this->faker->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT);
 
         return [
-            'brand_name' => $this->faker->randomElement([
-                'Pfizer', 'Novartis', 'Sanofi', 'Bayer', 'Merck', 'AstraZeneca'
-            ]),
+            'brand_id' => Brand::inRandomOrder()->first()->id, // Assuming brands are seeded
             'generic_name' => $this->faker->randomElement([
                 'Paracetamol', 'Ibuprofen', 'Amoxicillin', 'Metformin', 'Ciprofloxacin'
             ]),
