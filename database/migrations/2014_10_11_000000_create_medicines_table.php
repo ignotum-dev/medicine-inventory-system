@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Schema;
@@ -15,11 +16,14 @@ return new class extends Migration
     {
         Schema::create('medicines', function (Blueprint $table) {
             $table->id();
-            $table->string('brand_name');
             $table->string('generic_name');
             $table->string('image')->nullable();
             $table->string('dosage');
             
+            $table->foreignIdFor(Brand::class)
+                ->constrained()
+                ->onDelete('cascade');
+
             $table->foreignIdFor(Category::class)
                 ->constrained()
                 ->onDelete('cascade');
