@@ -75,6 +75,17 @@ class UserRolePermissionSeeder extends Seeder
             Permission::create(['name' => $categoryPermission]);
         }
 
+        $brandPermissions = [
+            'create brand',
+            'view brand',
+            'update brand',
+            'delete brand',
+        ];
+
+        foreach ($brandPermissions as $brandPermission) {
+            Permission::create(['name' => $brandPermission]);
+        }
+
         $supplierPermissions = [
             'create medicine',
             'view medicine',
@@ -88,7 +99,6 @@ class UserRolePermissionSeeder extends Seeder
 
         $purchasePermissions = Permission::create(['name' => 'purchase medicine']);
 
-
         // Create Roles
         $adminRole = Role::create(['name' => 'admin']);
         $encoderRole = Role::create(['name' => 'encode']);
@@ -99,7 +109,7 @@ class UserRolePermissionSeeder extends Seeder
         $allPermissionNames = Permission::pluck('name')->toArray();
         $adminRole->givePermissionTo($allPermissionNames);
 
-        $encoderRole->givePermissionTo($medicinePermissions, $categoryPermissions, $supplierPermissions, $purchasePermissions);
+        $encoderRole->givePermissionTo($medicinePermissions, $categoryPermissions, $supplierPermissions, $purchasePermissions, $brandPermissions);
 
         $pharmacistRole->givePermissionTo(
             'view medicine',
