@@ -16,7 +16,7 @@ class MedicineResource extends JsonResource
     {
         $data = [
             'id' => $this->id,
-            'brand_name' => $this->brand_name,
+            'brand_name' => $this->brand->name,
             'generic_name' => $this->generic_name,
             'image' => $this->image,
             'dosage' => $this->dosage,
