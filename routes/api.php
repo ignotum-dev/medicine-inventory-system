@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BrandController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -34,6 +35,7 @@ Route::post('/logout', [AuthController::class,'logout'])
 Route::prefix('/')->group(function () {
     // Route::apiresource('users', UserController::class);
     Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('brands', BrandController::class);
     Route::apiResource('suppliers', SupplierController::class);
     Route::apiResource('medicines', MedicineController::class);
 });
