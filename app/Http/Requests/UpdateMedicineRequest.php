@@ -22,7 +22,7 @@ class UpdateMedicineRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'brand_name' => ['sometimes', 'string', 'max:255'],
+            'brand_name' => ['sometimes', 'exists:brands,name'],
             'generic_name' => ['sometimes', 'string', 'max:255'],
             'dosage' => ['sometimes', 'string', 'max:50'],
             'category_name' => ['sometimes', 'exists:categories,name'],

@@ -23,7 +23,7 @@ class StoreMedicineRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'brand_name' => ['required', 'string', 'max:255'],
+            'brand_name' => ['required', 'exists:brands,name'],
             'generic_name' => ['required', 'string', 'max:255'],
             'dosage' => ['required', 'string', 'max:10'],
             'category_name' => ['required', 'exists:categories,name'],
