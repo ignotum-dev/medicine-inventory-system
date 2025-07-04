@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\Supplier;
@@ -44,13 +45,14 @@ class MedicineController extends Controller
         $validatedData = app(StoreMedicineRequest::class)->validated();
 
         DB::transaction(function () use ($validatedData) {
+            $brand = Brand::where('name', $validatedData['brand_name'])->first();
             $category = Category::where('name', $validatedData['category_name'])->first();
             $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
 
             Medicine::create([
-                'brand_name' => $validatedData['brand_name'],
                 'generic_name' => $validatedData['generic_name'],
                 'dosage' => $validatedData['dosage'],
+                'brand_id' => $brand->id,
                 'category_id' => $category->id,
                 'supplier_id' => $supplier->id,
                 'manufacturer' => $validatedData['manufacturer'],
@@ -95,11 +97,12 @@ class MedicineController extends Controller
         }
 
         DB::transaction(function () use ($validatedData, $medicine) {
+            $brand = Category::where('name', $validatedData['brand_name'])->first();
             $category = Category::where('name', $validatedData['category_name'])->first();
             $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
 
             $medicine->update([
-                'brand_name' => $validatedData['brand_name'],
+                'brand_name' => $brand->id,
                 'generic_name' => $validatedData['generic_name'],
                 'dosage' => $validatedData['dosage'],
                 'category_id' => $category->id,
@@ -140,13 +143,13 @@ class MedicineController extends Controller
 
     public function search(Request $request)
     {
-
         $per_page = $request->input('per_page', 10);
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortOrder = $request->input('sort_order', 'desc');
+        $sortBy = $request->input('sort_by', 'generic_name');
+        $sortOrder = $request->input('sort_order', 'asc');
         $expirationDateOperator = $request->input('expiration_date_operator', '>=');
 
         // Initialize the base query for medicines
+
         $medicinesQuery = Medicine::query();
 
         // Apply conditional logic for searching
@@ -155,7 +158,7 @@ class MedicineController extends Controller
             $date = date('Y-m-d', strtotime($search)); // Convert search to date if possible
 
             $medicinesQuery->where(function ($query) use ($search, $date) {
-                $query->where('brand_name', 'like', "%{$search}%")
+                $query
                     ->orWhere('generic_name', 'like', "%{$search}%")
                     ->orWhere('manufacturer', 'like', "%{$search}%")
                     ->orWhere('batch_number', 'like', "%{$search}%")
@@ -163,12 +166,22 @@ class MedicineController extends Controller
                     ->orWhere('description', 'like', "%{$search}%");
             });
 
-            // Optionally, search in related models
-            $medicinesQuery->orWhereHas('category', function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%");
-            })->orWhereHas('supplier', function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%");
-            });
+            // // Optionally, search in related models
+            // // Check if search contains multiple categories (comma-separated)
+            // if (strpos($search, ',') !== false) {
+            //     $categories = array_map('trim', explode(',', $search));
+            //     $medicinesQuery->orWhereHas('category', function ($query) use ($categories) {
+            //         $query->whereIn('name', $categories);
+            //     });
+            // } else {
+            //     $medicinesQuery->orWhereHas('category', function ($query) use ($search) {
+            //         $query->where('name', 'like', "%{$search}%");
+            //     });
+            // }
+
+            // $medicinesQuery->orWhereHas('supplier', function ($query) use ($search) {
+            //     $query->where('name', 'like', "%{$search}%");
+            // });
         }
 
         // Filter by expiration date if provided
@@ -178,11 +191,21 @@ class MedicineController extends Controller
             $medicinesQuery->whereDate('expiration_date', $expirationDateOperator, $expirationDate);
         }
 
-        // Filter by category if provided
-        if ($request->has('category')) {
-            $categoryFilter = $request->input('category');
-            $medicinesQuery->whereHas('category', function ($query) use ($categoryFilter) {
-                $query->where('name', 'like', "%{$categoryFilter}%");
+        // Filter by multiple categories if provided (comma-separated)
+        if ($request->has('categories')) {
+            $categoriesFilter = $request->input('categories');
+            $categoriesArray = array_map('trim', explode(',', $categoriesFilter));
+            $medicinesQuery->whereHas('category', function ($query) use ($categoriesArray) {
+                $query->whereIn('name', $categoriesArray);
+            });
+        }
+
+        // Filter by multiple categories if provided (comma-separated)
+        if ($request->has('brands')) {
+            $brandsFilter = $request->input('brands');
+            $brandsArray = array_map('trim', explode(',', $brandsFilter));
+            $medicinesQuery->whereHas('brand', function ($query) use ($brandsArray) {
+                $query->whereIn('name', $brandsArray);
             });
         }
 

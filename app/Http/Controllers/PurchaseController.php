@@ -20,10 +20,10 @@ class PurchaseController extends Controller
     public function purchase(Request $request, Purchase $purchase)
     {
         $this->authorize('purchase', $purchase);
-
+        
         // Validate the request
         $validated = $request->validate([
-            'brand_name' => 'required|exists:medicines,brand_name',
+            'brand_name' => 'required|exists:brands,name',
             'generic_name' => 'required|exists:medicines,generic_name',
             'quantity' => 'required|integer|min:1',
         ]);
@@ -32,7 +32,7 @@ class PurchaseController extends Controller
             ['brand_name', $validated['brand_name']],
             ['generic_name', $validated['generic_name']],
         ])->first();
-
+        
         if (!$medicine) {
             return response()->json(['message' => 'The selected brand name and generic name do not match or are not found.'], 422);
         }

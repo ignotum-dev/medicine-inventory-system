@@ -23,7 +23,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return new CategoryCollection(Category::paginate(5));
+        return CategoryResource::collection(Category::all());
     }
 
     /**
