@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\BrandEvent;
 use App\Models\Brand;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class BrandController extends Controller
      */
     public function index()
     {
-        return BrandResource::collection(Brand::paginate(5));
+        return BrandResource::collection(Brand::all());
 
     }
 
@@ -40,6 +41,7 @@ class BrandController extends Controller
             Brand::create([
                 'name' => $validatedData['name'],
             ]);
+            event(new BrandEvent('stored'));
         });
 
         return response()->json(['message' => 'Brand added successfully!'], 201);
@@ -66,6 +68,8 @@ class BrandController extends Controller
             $brand->update([
                 'name' => $validatedData['name'],
             ]);
+
+            event(new BrandEvent('updated'));
         });
 
         return response()->json(['message' => 'Brand updated successfully!'], 200);
@@ -78,7 +82,8 @@ class BrandController extends Controller
     {
         try {
             $brand->delete();
-
+            event(new BrandEvent('deleted'));
+            
             return response()->json([
                 'message' => 'Brand deleted successfully',
                 'status' => 'success'

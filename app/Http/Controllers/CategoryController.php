@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CategoryEvent;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,8 @@ class CategoryController extends Controller
             Category::create([
                 'name' => $validatedData['name'],
             ]);
+
+            event(new CategoryEvent('stored'));
         });
 
         return response()->json(['message' => 'Category added successfully!'], 201);
@@ -63,6 +66,8 @@ class CategoryController extends Controller
             $category->update([
                 'name' => $validatedData['name'],
             ]);
+
+            event(new CategoryEvent('updated'));
         });
 
         return response()->json(['message' => 'Category updated successfully!'], 200);
@@ -75,7 +80,7 @@ class CategoryController extends Controller
     {
         try {
             $category->delete();
-
+            event(new CategoryEvent('deleted'));
             return response()->json([
                 'message' => 'Category deleted successfully',
                 'status' => 'success'
