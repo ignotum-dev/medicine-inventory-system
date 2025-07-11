@@ -97,7 +97,7 @@ class MedicineController extends Controller
         }
 
         DB::transaction(function () use ($validatedData, $medicine) {
-            $brand = Category::where('name', $validatedData['brand_name'])->first();
+            $brand = Brand::where('name', $validatedData['brand_name'])->first();
             $category = Category::where('name', $validatedData['category_name'])->first();
             $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
 
