@@ -13,6 +13,7 @@ class Purchase extends Model
 
     protected $fillable = [
         'medicine_id',
+        'order_id',
         'quantity',
         'stocks_left',
         'selling_price',
@@ -29,5 +30,9 @@ class Purchase extends Model
 
     public function medicine() {
         return $this->belongsTo(Medicine::class);
+    }
+
+    public function order() {
+        return $this->belongsTo(Order::class);
     }
 }

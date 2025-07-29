@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PurchaseEvent;
+use App\Http\Resources\PurchaseResource;
+use App\Models\Order;
 use App\Models\User;
 use App\Models\Medicine;
 use App\Models\Purchase;
@@ -20,79 +23,101 @@ class PurchaseController extends Controller
     public function purchase(Request $request, Purchase $purchase)
     {
         $this->authorize('purchase', $purchase);
-        
-        // Validate the request
+
+        // Validate the request for multiple items
         $validated = $request->validate([
-            'brand_name' => 'required|exists:brands,name',
-            'generic_name' => 'required|exists:medicines,generic_name',
-            'quantity' => 'required|integer|min:1',
+            'items' => 'required|array|min:1',
+            'items.*.brand_name' => 'required|exists:brands,name',
+            'items.*.generic_name' => 'required|exists:medicines,generic_name',
+            'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        $medicine = Medicine::where([
-            ['brand_name', $validated['brand_name']],
-            ['generic_name', $validated['generic_name']],
-        ])->first();
-        
-        if (!$medicine) {
-            return response()->json(['message' => 'The selected brand name and generic name do not match or are not found.'], 422);
-        }
+        $purchasedItems = [];
+        $totalPurchasePrice = 0;
 
-        // Check if sufficient quantity is available
-        if ($medicine->quantity < $validated['quantity']) {
-            return response()->json([
-                'message' => 'Insufficient stock available.',
-                'available_quantity' => $medicine->quantity,
-            ], 400);
-        }
-
-        DB::beginTransaction(); // Start the transaction
+        DB::beginTransaction();
 
         try {
-            // Calculate the total price
-            $totalPrice = $medicine->selling_price * $validated['quantity'];
-
-            activity()->disableLogging();
-
-            // Deduct the quantity
-            $medicine->quantity -= $validated['quantity'];
-            $medicine->save();
-
-            // Log the purchase
-            $medicineLog = Purchase::create([
-                'medicine_id' => $medicine->id,
-                'quantity' => $validated['quantity'],
-                'stocks_left' => $medicine->quantity,
-                'selling_price' => $medicine->selling_price,
-                'total_price' => $totalPrice
+            $order = Order::create([
+                'order_number' => 'ORD-' . now()->format('YmdHis'),
+                'processed_by_id' => auth()->id(),
+                'total_amount' => 0,
             ]);
 
-            activity()->enableLogging()
-                ->causedBy(auth()->user())
-                ->performedOn($medicine)
-                ->withProperties($medicineLog)
-                ->log('purchased');
+            foreach ($validated['items'] as $item) {
+                // Find the medicine by joining with brands table
+                $medicine = Medicine::whereHas('brand', function ($query) use ($item) {
+                    $query->where('name', $item['brand_name']);
+                })->where('generic_name', $item['generic_name'])->first();
 
-            // Check for low stock and send an email alert
-            if ($medicine->quantity < 10) {
-                Mail::to('geraldivan26@gmail.com')->send(new LowStockAlert($medicine));
+                if (!$medicine) {
+                    throw new \Exception("Medicine with brand '{$item['brand_name']}' and generic name '{$item['generic_name']}' not found.");
+                }
+
+                // Check if sufficient quantity is available
+                if ($medicine->quantity < $item['quantity']) {
+                    throw new \Exception("Insufficient stock for {$medicine->generic_name} ({$medicine->brand->name}). Available: {$medicine->quantity}, Requested: {$item['quantity']}");
+                }
+
+                // Calculate the total price for this item
+                $itemTotalPrice = $medicine->selling_price * $item['quantity'];
+                $totalPurchasePrice += $itemTotalPrice;
+
+                activity()->disableLogging();
+
+                // Deduct the quantity
+                $medicine->quantity -= $item['quantity'];
+                $medicine->save();
+
+                // Log the purchase for each item
+                $medicineLog = Purchase::create([
+                    'medicine_id' => $medicine->id,
+                    'order_id' => $order->id,
+                    'quantity' => $item['quantity'],
+                    'stocks_left' => $medicine->quantity,
+                    'selling_price' => $medicine->selling_price,
+                    'total_price' => $itemTotalPrice
+                ]);
+
+                activity()->enableLogging()
+                    ->causedBy(auth()->user())
+                    ->performedOn($medicine)
+                    ->withProperties($medicineLog)
+                    ->log('purchased');
+
+                // Check for low stock and send an email alert
+                if ($medicine->quantity < 10) {
+                    Mail::to('geraldivan26@gmail.com')->send(new LowStockAlert($medicine));
+                }
+
+                event(new PurchaseEvent('purchased'));
+
+                // Add to purchased items array
+                $purchasedItems[] = [
+                    'brand_name' => $medicine->brand->name,
+                    'generic_name' => $medicine->generic_name,
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $medicine->selling_price,
+                    'total_price' => $itemTotalPrice,
+                    'remaining_quantity' => $medicine->quantity
+                ];
             }
 
-            DB::commit(); // Commit the transaction
+            $order->update(['total_amount' => $totalPurchasePrice]);
+
+            DB::commit();
         } catch (\Exception $e) {
-            DB::rollBack(); // Roll back the transaction on error
+            DB::rollBack();
             return response()->json(['message' => 'An error occurred during the purchase.', 'error' => $e->getMessage()], 500);
         }
 
-        // Return the computed total price
+        // Return the response with all purchased items
         return response()->json([
             'message' => 'Purchase successful.',
-            'medicine' => [
-                'brand_name' => $medicine->brand_name,
-                'generic_name' => $medicine->generic_name
-            ],
-            'purchased_quantity' => $validated['quantity'],
-            'total_price' => $totalPrice,
-            'remaining_quantity' => $medicine->quantity
+            'order_number' => $order->order_number,
+            'purchased_items' => $purchasedItems,
+            'total_purchase_price' => $totalPurchasePrice,
+            'items_count' => count($purchasedItems)
         ]);
     }
 }
