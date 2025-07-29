@@ -25,7 +25,8 @@ class RolesAndPermissionSeeder extends Seeder
             'create brand', 'view brand', 'update brand', 'delete brand',
             'create category', 'view category', 'update category', 'delete category',
             'create supplier', 'view supplier', 'update supplier', 'delete supplier',
-            'purchase medicine'
+            'purchase medicine',
+            'view order',
         ];
 
         foreach ($permissions as $permission) {
