@@ -23,9 +23,9 @@ class User extends Authenticatable implements Searchable
      * @var array<int, string>
      */
 
-     protected $guard_name = 'sanctum';
+    protected $guard_name = 'sanctum';
 
-     protected $fillable = [
+    protected $fillable = [
         'role_id',
         'first_name',
         'middle_name',
@@ -42,10 +42,10 @@ class User extends Authenticatable implements Searchable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        // ->logOnly(['name', 'text']);
-        ->logFillable()
-        ->logOnlyDirty()
-        ->logExcept(['password']);
+            // ->logOnly(['name', 'text']);
+            ->logFillable()
+            ->logOnlyDirty()
+            ->logExcept(['password']);
     }
 
     public function getSearchResult(): SearchResult
@@ -99,5 +99,10 @@ class User extends Authenticatable implements Searchable
     public function isViewer()
     {
         return $this->role_id === 4;
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }
