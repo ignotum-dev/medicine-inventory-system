@@ -26,7 +26,7 @@ class LowStockAlert extends Mailable
     {
         return $this->with([
                         'id' => $this->medicine->id,
-                        'brand_name' => $this->medicine->brand_name,
+                        'brand_name' => $this->medicine->brand->name,
                         'generic_name' => $this->medicine->generic_name,
                         'quantity' => $this->medicine->quantity,
                     ]);
@@ -38,7 +38,7 @@ class LowStockAlert extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('flores.geraldivan@gmail.com', 'Medicine Inventory'),
+            from: new Address('flores.geraldivan@gmail.com', 'Medicine Inventory System'),
             subject: 'Low Stock Alert',
         );
     }
