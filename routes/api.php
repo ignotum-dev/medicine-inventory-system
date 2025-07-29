@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\BrandController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PurchaseController;
@@ -38,13 +39,18 @@ Route::prefix('/')->group(function () {
     Route::apiResource('brands', BrandController::class);
     Route::apiResource('suppliers', SupplierController::class);
     Route::apiResource('medicines', MedicineController::class);
+    Route::get('orders', [OrderController::class, 'index'])->middleware('auth');
 });
 
-Route::prefix('/medicines')->group(function () {
+Route::prefix('/medicines')->middleware('auth')->group(function () {
     Route::post('/purchase', [PurchaseController::class, 'purchase']);
-    Route::post('/{medicine}/upload-image', [MedicineController::class, 'uploadImage']);
     Route::get('/', [MedicineController::class, 'search']);
-})->middleware('auth');
+    Route::post('/{medicine}/upload-image', [MedicineController::class, 'uploadImage']);
+});
+
+Route::prefix('/purchases')->middleware('auth')->group(function () {
+    Route::post('/', [PurchaseController::class, 'purchase']);
+});
 
 Route::middleware(['auth'])->group(function () {
     // Permission routes
@@ -60,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
 
     // User routes
     Route::apiResource('users', UserController::class);
+    Route::get('users-username', [UserController::class, 'usernameEnums'])->name('users.username.enums');
 });
 
 Route::group(['middleware' => ['role:admin|encoder|pharmacist|viewer']], function() {
