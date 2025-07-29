@@ -20,7 +20,7 @@ use App\Http\Requests\UpdateUserRequest;
 class UserController extends Controller
 {
     use SearchableTrait;
-    
+
     public function __construct()
     {
         $this->middleware('auth:sanctum');
@@ -41,7 +41,7 @@ class UserController extends Controller
 
         if ($searchQuery) {
             $results = $this->performSearch(User::class, ['first_name', 'middle_name', 'last_name', 'email', 'username'], $searchQuery);
-            
+
             return response()->json([
                 'query' => $searchQuery,
                 'results' => $results,
@@ -52,7 +52,7 @@ class UserController extends Controller
         // Apply Spatie QueryBuilder for filtering and pagination if no search query is provided
         $users = QueryBuilder::for(User::class)
             ->allowedFilters([
-                'first_name', 
+                'first_name',
                 'middle_name',
                 'last_name',
                 'email',
@@ -63,7 +63,7 @@ class UserController extends Controller
 
         return new UserCollection($users);
     }
-    
+
 
     /**
      * Store a newly created resource in storage.
@@ -74,7 +74,7 @@ class UserController extends Controller
 
         DB::transaction(function () use ($validatedData) {
             $role = Role::where('name', $validatedData['role'])->first();
-            
+
             User::create([
                 'role_id' => $role->id,
                 'first_name' => $validatedData['first_name'],
@@ -118,7 +118,7 @@ class UserController extends Controller
 
         DB::transaction(function () use ($validatedData, $user) {
             $role = Role::where('name', $validatedData['role'])->first();
-            
+
             $user->update([
                 'role_id' => $role->id,
                 'first_name' => $validatedData['first_name'],
@@ -140,7 +140,7 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-    {   
+    {
         try {
             $user->delete();
 
@@ -155,5 +155,20 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function usernameEnums()
+    {
+        if (User::count() === 0) {
+            return response()->json([
+                'message' => 'No usernames found.'
+            ], 200);
+        }
+
+        $usernames = User::select('id', 'username')->get();
+
+        return response()->json([
+            'data' => $usernames
+        ], 200);
     }
 }
