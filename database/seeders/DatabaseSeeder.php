@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        
+
         $this->call(RolesAndPermissionSeeder::class);
         // $this->call(PermissionSeeder::class);
         // $this->call(RoleSeeder::class);
@@ -27,5 +28,8 @@ class DatabaseSeeder extends Seeder
         $this->call(SupplierSeeder::class);
         $this->call(MedicineSeeder::class);
         $this->call(UserSeeder::class);
+        
+        $files = Storage::files('public/medicine_images');
+        Storage::delete($files);
     }
 }
