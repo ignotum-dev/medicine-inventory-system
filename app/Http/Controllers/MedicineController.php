@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MedicineEvent;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Medicine;
@@ -14,6 +15,7 @@ use App\Http\Resources\MedicineResource;
 use App\Http\Resources\MedicineCollection;
 use App\Http\Requests\StoreMedicineRequest;
 use App\Http\Requests\UpdateMedicineRequest;
+use Illuminate\Support\Facades\Storage;
 
 class MedicineController extends Controller
 {
@@ -49,7 +51,7 @@ class MedicineController extends Controller
             $category = Category::where('name', $validatedData['category_name'])->first();
             $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
 
-            Medicine::create([
+            $medicineData = Medicine::create([
                 'generic_name' => $validatedData['generic_name'],
                 'dosage' => $validatedData['dosage'],
                 'brand_id' => $brand->id,
@@ -65,7 +67,9 @@ class MedicineController extends Controller
             ]);
         });
 
-        return response()->json(['message' => 'Medicine added successfully!'], 200);
+        return response()->json([
+            'message' => 'Medicine added successfully!'
+        ], 200);
     }
 
     /**
@@ -102,7 +106,7 @@ class MedicineController extends Controller
             $supplier = Supplier::where('name', $validatedData['supplier_name'])->first();
 
             $medicine->update([
-                'brand_name' => $brand->id,
+                'brand_id' => $brand->id,
                 'generic_name' => $validatedData['generic_name'],
                 'dosage' => $validatedData['dosage'],
                 'category_id' => $category->id,
@@ -117,7 +121,11 @@ class MedicineController extends Controller
             ]);
         });
 
-        return response()->json(['message' => 'Medicine updated successfully!'], 200);
+        event(new MedicineEvent('updated'));
+
+        return response()->json([
+            'message' => 'Medicine updated successfully!'
+        ], 200);
     }
 
     /**
@@ -194,7 +202,7 @@ class MedicineController extends Controller
         // Filter by multiple categories if provided (comma-separated)
         if ($request->has('categories')) {
             $categoriesFilter = $request->input('categories');
-            $categoriesArray = array_map('trim', explode(',', $categoriesFilter));
+            $categoriesArray = array_map('trim', explode('|', $categoriesFilter));
             $medicinesQuery->whereHas('category', function ($query) use ($categoriesArray) {
                 $query->whereIn('name', $categoriesArray);
             });
@@ -203,19 +211,28 @@ class MedicineController extends Controller
         // Filter by multiple categories if provided (comma-separated)
         if ($request->has('brands')) {
             $brandsFilter = $request->input('brands');
-            $brandsArray = array_map('trim', explode(',', $brandsFilter));
+            $brandsArray = array_map('trim', explode('|', $brandsFilter));
             $medicinesQuery->whereHas('brand', function ($query) use ($brandsArray) {
                 $query->whereIn('name', $brandsArray);
             });
         }
 
         // Filter by supplier if provided
-        if ($request->has('supplier')) {
-            $supplierFilter = $request->input('supplier');
-            $medicinesQuery->whereHas('supplier', function ($query) use ($supplierFilter) {
-                $query->where('name', 'like', "%{$supplierFilter}%");
+        if ($request->has('suppliers')) {
+            $suppliersFilter = $request->input('suppliers');
+            $suppliersArray = array_map('trim', explode('|', $suppliersFilter));
+            $medicinesQuery->whereHas('supplier', function ($query) use ($suppliersArray) {
+                $query->whereIn('name', $suppliersArray);
             });
         }
+
+        // // Filter by supplier if provided
+        // if ($request->has('supplier')) {
+        //     $supplierFilter = $request->input('supplier');
+        //     $medicinesQuery->whereHas('supplier', function ($query) use ($supplierFilter) {
+        //         $query->where('name', 'like', "%{$supplierFilter}%");
+        //     });
+        // }
 
         // Order and paginate the results
         $medicinesResult = $medicinesQuery
@@ -239,26 +256,74 @@ class MedicineController extends Controller
     public function uploadImage(Request $request, Medicine $medicine)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'sometimes',
         ]);
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = $medicine->brand_name . '_' . $medicine->generic_name . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/medicine_images', $imageName);
+        try {
+            if ($request->hasFile('image')) {
+                // Handle file upload
+                $image = $request->file('image');
+                $baseImageName = $medicine->id . '_' . $medicine->generic_name . '(' . $medicine->brand->name . ')';
+                $directory = storage_path('app/public/medicine_images');
+                $pattern = $directory . '/' . $baseImageName . '.*';
 
-            $imageUrl = asset('storage/medicine_images/' . $imageName);
+                // Delete all files with the same base name and any extension
+                foreach (glob($pattern) as $existingFile) {
+                    @unlink($existingFile);
+                }
 
+                $imageName = $baseImageName . '.' . $image->getClientOriginalExtension();
+                $imagePath = 'public/medicine_images/' . $imageName;
+                $image->storeAs('public/medicine_images', $imageName);
+            } elseif ($request->filled('image')) {
+                // Handle base64 upload
+                $base64Image = $request->input('image');
+                $imageData = explode(',', $base64Image);
+                $decoded = base64_decode(end($imageData));
+                $extension = 'png'; // Default
+                if (isset($imageData[0]) && preg_match('/^data:image\/(\w+);base64$/', $imageData[0], $matches)) {
+                    $extension = $matches[1];
+                } else {
+                    $url = $request->input('image');
+                    $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+                    if ($ext) {
+                        $extension = $ext;
+                    }
+                }
+                $baseImageName = $medicine->id . '_' . $medicine->generic_name . '(' . $medicine->brand->name . ')';
+                $directory = storage_path('app/public/medicine_images');
+                $pattern = $directory . '/' . $baseImageName . '.*';
+
+                // Delete all files with the same base name and any extension
+                foreach (glob($pattern) as $existingFile) {
+                    @unlink($existingFile);
+                }
+
+                $imageName = $baseImageName . '.' . $extension;
+                $imagePath = 'public/medicine_images/' . $imageName;
+                if (Storage::exists($imagePath)) {
+                    Storage::delete($imagePath);
+                }
+                $path = storage_path('app/public/medicine_images/' . $imageName);
+                file_put_contents($path, $decoded);
+            } 
+
+            $imageUrl = 'medicine_images/' . $imageName;
             Medicine::where('id', $medicine->id)->update(['image' => $imageUrl]);
+
+            event(new MedicineEvent('image_uploaded'));
 
             return response()->json([
                 'message' => 'Image uploaded successfully!',
-                'image_url' => $imageUrl,
+                'image_url' => $medicine->image,
             ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'No image uploaded.',
+                'errors' => [
+                    'image' => ['No image file provided.']
+                ],
+            ], 422);
         }
-
-        return response()->json([
-            'message' => 'No image uploaded.',
-        ], 400);
     }
 }
