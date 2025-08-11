@@ -22,6 +22,7 @@ class OrderController extends Controller
     {
         if (Order::count() === 0) {
             return response()->json([
+                'data' => [],
                 'message' => 'No orders found.'
             ], 200);
         }
@@ -39,7 +40,7 @@ class OrderController extends Controller
 
         // Filter by processed_by username
         if ($request->filled('processed_by')) {
-            $processedByArray = array_map('trim', explode(',', $request->input('processed_by')));
+            $processedByArray = array_map('trim', explode('|', $request->input('processed_by')));
             $orderQuery->whereHas('user', function ($query) use ($processedByArray) {
                 $query->whereIn('username', $processedByArray);
             });
