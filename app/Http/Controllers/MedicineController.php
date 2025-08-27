@@ -263,7 +263,7 @@ class MedicineController extends Controller
             if ($request->hasFile('image')) {
                 // Handle file upload
                 $image = $request->file('image');
-                $baseImageName = $medicine->id . '_' . $medicine->generic_name . '(' . $medicine->brand->name . ')';
+                $baseImageName = $medicine->id;
                 $directory = storage_path('app/public/medicine_images');
                 $pattern = $directory . '/' . $baseImageName . '.*';
 
@@ -280,17 +280,18 @@ class MedicineController extends Controller
                 $base64Image = $request->input('image');
                 $imageData = explode(',', $base64Image);
                 $decoded = base64_decode(end($imageData));
-                $extension = 'png'; // Default
+                $extension = 'jpeg'; // Default
                 if (isset($imageData[0]) && preg_match('/^data:image\/(\w+);base64$/', $imageData[0], $matches)) {
-                    $extension = $matches[1];
+                    // $extension = $matches[1];
+                    $extension = 'jpeg';
                 } else {
                     $url = $request->input('image');
                     $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
                     if ($ext) {
-                        $extension = $ext;
+                        $extension = 'jpeg';
                     }
                 }
-                $baseImageName = $medicine->id . '_' . $medicine->generic_name . '(' . $medicine->brand->name . ')';
+                $baseImageName = $medicine->id;
                 $directory = storage_path('app/public/medicine_images');
                 $pattern = $directory . '/' . $baseImageName . '.*';
 
